@@ -1,0 +1,13 @@
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.bordered {
+    border-style: solid;
+    border-radius: 16px;
+    padding: 20px;
+}

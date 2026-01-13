@@ -5,18 +5,22 @@ import { useState } from "react";
 //temp data
 function getBlocks(): Block[] {
   return [
-    {
-      value: "Block 1",
-      minimised: false,
-      next: [
-        {
-          value: "Block 2",
-          minimised: true,
-          next: [{ value: "Block 3", minimised: true, next: null }],
-        },
-      ],
-    },
+    new Block("A", [new Block("E")]),
+    new Block("B", [new Block("C"), new Block("D", [new Block("F")])]),
   ];
+}
+
+// note - parameters ideally should not mutate
+function updateBlock(blocks: Block[], id: string) {
+  blocks = blocks.map((block) => {
+    if (block.id === id) {
+      block.minimised = !block.minimised;
+    } else {
+      updateBlock(block.next, id);
+    }
+    return block;
+  });
+  return blocks;
 }
 
 function App() {
@@ -26,18 +30,13 @@ function App() {
     <div style={{ width: "100vw" }}>
       <Diagram
         blocks={blocks}
-        onMinimise={() => {
-          console.log(blocks);
+        onMinimise={(id) => {
+          let newBlocks = updateBlock(blocks, id);
+          setBlocks(newBlocks);
         }}
       />
     </div>
   );
 }
-
-function updateBlock(
-  id: number,
-  blocks: Block[],
-  setBlocks: (blocks: Block[]) => void
-) {}
 
 export default App;

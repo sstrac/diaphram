@@ -1,10 +1,10 @@
 class Block {
-  value: string;
-  next: Block[] | null
+  id: string;
+  next: Block[];
   minimised: boolean;
 
-  constructor(value: string, next: Block[] | null = null, minimised: boolean = true) {
-    this.value = value;
+  constructor(id: string, next: Block[] = [], minimised: boolean = true) {
+    this.id = id;
     this.next = next;
     this.minimised = minimised;
   }

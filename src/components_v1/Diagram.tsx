@@ -3,36 +3,38 @@ import Block from "./Block";
 
 interface Props {
   blocks: Block[];
-  onMinimise: () => void;
+  onMinimise: (id: string) => void;
 }
 
-const renderButton = (block: Block, onMinimise: () => void) => (
-  <button className="bordered" onClick={() => onMinimise()}>
-    {block.value}
+const renderButton = (block: Block, minimise: () => void) => (
+  <button className="bordered" onClick={minimise}>
+    {block.id}
   </button>
 );
 
 function Diagram(props: Props): ReactElement {
-  let diagram = []; //jsx array
-
+  let diagram = []; //to be a jsx array
   diagram.push(generateBlock(props));
-  console.log(diagram);
   return <>{diagram.map((el) => el)}</>;
 }
 
 function generateBlock({ blocks, onMinimise }: Props): ReactElement[] {
-  const nextBlocks: Block[] | null = blocks[0].next;
-  let finalBlocks: ReactElement[] = [];
+  let buttons: ReactElement[] = [];
 
-  if (nextBlocks) {
-    finalBlocks = finalBlocks.concat(
-      generateBlock({ blocks: nextBlocks, onMinimise })
-    );
-  }
+  blocks.map((block) => {
+    //recusively generate child blocks first
+    if (block.next.length > 0 && !block.minimised) {
+      buttons = buttons.concat(
+        generateBlock({ blocks: block.next, onMinimise })
+      );
+    }
 
-  finalBlocks.push(renderButton(blocks[0], onMinimise));
+    let minimise = () => onMinimise(block.id);
 
-  return finalBlocks;
+    buttons.push(renderButton(block, minimise));
+  });
+  return buttons;
+  //add this block to the child blocks
 }
 
 export default Diagram;

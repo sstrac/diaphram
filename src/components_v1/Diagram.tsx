@@ -6,27 +6,37 @@ interface Props {
   onMinimise: (id: string) => void;
 }
 
-const renderButton = (block: Block, minimise: () => void) => (
-  <button className="bordered" onClick={minimise}>
-    {block.id}
-  </button>
-);
-
-function Diagram(props: Props): ReactElement {
-  let diagram = []; //to be a jsx array
-  diagram.push(generateBlock(props));
-  return <>{diagram.map((el) => el)}</>;
+function renderButton(block: Block, minimise: () => void) {
+  const maximisedButton = (
+    <button className="bordered" onClick={minimise}>
+      {block.id.toLowerCase()}
+    </button>
+  );
+  const minimisedButton = (
+    <button className="bordered" onClick={minimise}>
+      {block.id}
+    </button>
+  );
+  return block.minimised ? minimisedButton : maximisedButton;
 }
 
-function generateBlock({ blocks, onMinimise }: Props): ReactElement[] {
+function Diagram(props: Props): ReactElement {
+  return <>{recursivelyGenerateBlock(props).map((el) => el)}</>;
+}
+
+function recursivelyGenerateBlock({
+  blocks,
+  onMinimise,
+}: Props): ReactElement[] {
   let buttons: ReactElement[] = [];
 
   blocks.map((block) => {
     //recusively generate child blocks first
-    if (block.next.length > 0 && !block.minimised) {
-      buttons = buttons.concat(
-        generateBlock({ blocks: block.next, onMinimise })
-      );
+    if (block.next.length > 0) {
+      if (!block.minimised)
+        buttons = buttons.concat(
+          recursivelyGenerateBlock({ blocks: block.next, onMinimise }),
+        );
     }
 
     let minimise = () => onMinimise(block.id);

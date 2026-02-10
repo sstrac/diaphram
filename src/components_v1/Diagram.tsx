@@ -5,17 +5,15 @@ import CloseButton from "react-bootstrap/CloseButton";
 interface Props {
   blocks: Block[];
   parent?: Block | null;
-  onMinimise: (id: string) => void;
+  toggleExpansion: (id: string) => void;
 }
 
-function buttonTemplate(block: Block, minimise: () => void) {
-  const maximisedButton = <CloseButton onClick={minimise} />;
-  const minimisedButton = (
-    <button className="bordered" onClick={minimise}>
+function buttonTemplate(block: Block, maximise: () => void) {
+  return (
+    <button className="bordered" onClick={maximise}>
       {block.id}
     </button>
   );
-  return block.minimised ? minimisedButton : maximisedButton;
 }
 
 function Diagram(props: Props): ReactElement {
@@ -25,33 +23,42 @@ function Diagram(props: Props): ReactElement {
 function recursivelyGenerateBlock({
   blocks,
   parent,
-  onMinimise,
+  toggleExpansion,
 }: Props): ReactElement {
   let buttons: ReactElement[] = [];
 
   blocks.map((block) => {
     //recusively generate child blocks first
-    if (block.next.length > 0) {
-      if (!block.minimised)
+    if (!block.minimised) {
+      if (block.next.length > 0) {
         //if parent is expanded
-        buttons = buttons.concat(
+        buttons.push(
           recursivelyGenerateBlock({
             blocks: block.next,
             parent: block,
-            onMinimise,
+            toggleExpansion,
           }),
         );
+      }
+    } else {
+      //Render the block, but only if we are minimised
+      console.log(toggleExpansion);
+      let toggleExpansionForSelf = () => toggleExpansion(block.id);
+      buttons.push(buttonTemplate(block, toggleExpansionForSelf));
     }
-
-    let minimise = () => onMinimise(block.id);
-
-    buttons.push(buttonTemplate(block, minimise));
   });
 
-  if (!parent || parent?.minimised) {
-    return <>{buttons}</>;
+  if (parent && !parent.minimised) {
+    let toggleParentExpansion = () => toggleExpansion(parent.id);
+
+    return (
+      <div className="bordered">
+        {buttons}
+        <CloseButton onClick={toggleParentExpansion}></CloseButton>
+      </div>
+    );
   } else {
-    return <div className="bordered">{buttons}</div>;
+    return <>{buttons}</>;
   }
   //add this block to the child blocks
 }

@@ -30,7 +30,7 @@ function App() {
     <div style={{ width: "100vw" }}>
       <Diagram
         blocks={blocks}
-        onMinimise={(id) => {
+        toggleExpansion={(id) => {
           let newBlocks = updateBlock(blocks, id);
           setBlocks(newBlocks);
         }}

@@ -10,7 +10,11 @@ interface Props {
 
 function buttonTemplate(block: Block, maximise: () => void) {
   return (
-    <button className="bordered" onClick={maximise}>
+    <button
+      className="bordered"
+      onClick={maximise}
+      disabled={block.next.length == 0}
+    >
       {block.id}
     </button>
   );
@@ -42,12 +46,12 @@ function recursivelyGenerateBlock({
       }
     } else {
       //Render the block, but only if we are minimised
-      console.log(toggleExpansion);
       let toggleExpansionForSelf = () => toggleExpansion(block.id);
       buttons.push(buttonTemplate(block, toggleExpansionForSelf));
     }
   });
 
+  //Create border if parent exists and is expanded
   if (parent && !parent.minimised) {
     let toggleParentExpansion = () => toggleExpansion(parent.id);
 
@@ -60,7 +64,6 @@ function recursivelyGenerateBlock({
   } else {
     return <>{buttons}</>;
   }
-  //add this block to the child blocks
 }
 
 export default Diagram;

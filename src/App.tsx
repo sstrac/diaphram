@@ -1,7 +1,7 @@
 import Diagram from "./components_v1/Diagram";
 import Block from "./components_v1/Block";
 import { useState } from "react";
-
+import "bootstrap/dist/css/bootstrap.min.css";
 //temp data
 function getBlocks(): Block[] {
   return [
